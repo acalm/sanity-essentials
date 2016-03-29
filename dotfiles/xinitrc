@@ -1,0 +1,8 @@
+export MOZ_USE_OMTC=1
+[[ -d $HOME/bin ]] && export PATH="$HOME/bin:$PATH"
+xset -b
+wmname Awesome
+[[ -f $HOME/.Xresources ]] && xrdb -merge ~/.Xresources
+# gpg-agent --daemon
+exec ck-launch-session dbus-launch --sh-syntax --exit-with-session awesome
+# vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:
