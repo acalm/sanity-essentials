@@ -106,7 +106,7 @@ myawesomemenu = {
 mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesome_icon },
                                     {"firefox", "firefox"},
                                     { "terminal", terminal },
-				    { "mc", urxvt "-e mc"},
+				    { "mc", terminal .. " -e mc "},
 				    { "quit awesome", awesome.quit },
 				    { "reboot",    "sudo reboot" },
 				    { "poweroff",  "sudo poweroff" }
