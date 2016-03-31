@@ -3,8 +3,9 @@
 source /etc/bash/bashrc.d/bash_completion.sh
 
 export PATH="$PATH:$HOME/bin"
+export HISTCONTROL="$HISTCONTROL erasedups:ignoreboth"
 export HISTSIZE=""
-export HISTFILESIZE="10485760"
+export HISTFILESIZE="-1"
 
 
 if [[ -e $HOME/.git-prompt.sh ]]; then
