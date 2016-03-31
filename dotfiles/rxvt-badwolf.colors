@@ -36,8 +36,11 @@ URxvt*cursorColor: tardis
 URxvt*scrollColor: deepgravel
 
 !        black
-URxvt*color0:      blackestgravel
-URxvt*color8:      coal
+URxvt*color0:      coal
+
+!	Grey
+URxvt*color8:      gravel
+
 !        red
 URxvt*color1:      taffy
 URxvt*color9:      taffy
