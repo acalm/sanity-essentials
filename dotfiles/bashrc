@@ -1,6 +1,5 @@
-# After everything else
+# after everything else
 
-# Requires gentoo bash completion package
 if [[ -f /etc/bash/bashrc.d/bash_completion.sh ]]; then
 	source /etc/bash/bashrc.d/bash_completion.sh
 fi
