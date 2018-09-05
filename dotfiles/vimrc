@@ -17,3 +17,7 @@ set ttimeoutlen=50
 
 set incsearch
 set hlsearch
+
+" netrw vim over ssh stuff
+autocmd BufRead scp://* :set bt=acwrite
+let g:netrw_silent = 1
