@@ -1,4 +1,4 @@
-#include "rxvt-badwolf.colors"
+#include "rxvt-linux.colors"
 Xft.antialias: 1
 Xft.autohint: 0
 Xft.dpi: 96
@@ -7,7 +7,7 @@ Xft.hintstyle: hintfull
 Xft.lcdfilter: lcddefault
 Xft.rgba: rgb
 
-Xcursor.theme:Vanilla-DMZ-AA
+Xcursor.theme: Vanilla-DMZ-AA
 xterm*font: nexus
 xterm*scaleHeight: 1.01
 xterm*borderWidth: 0
