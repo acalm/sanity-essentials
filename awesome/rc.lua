@@ -9,7 +9,7 @@
 -- {{{ Required libraries
 local awesome, client, screen, tag = awesome, client, screen, tag
 local ipairs, string, os, table, tostring, tonumber, type = ipairs, string, os, table, tostring, tonumber, type
-
+local cyclefocus    = require('cyclefocus') --[[  this may cause trouble ]]--
 local gears         = require("gears")
 local awful         = require("awful")
                       require("awful.autofocus")
@@ -61,11 +61,11 @@ end
 local chosen_theme = "powerarrow-darker"
 local modkey       = "Mod4"
 local altkey       = "Mod1"
-local terminal     = "urxvt"
+local terminal     = "urxvt" or "alacritty"
 local editor       = os.getenv("EDITOR") or "vim"
 local gui_editor   = "vim"
 local browser      = "firefox"
-local lock_cmd     = "slock"
+local lock_cmd     = 'slock'
 
 awful.util.terminal = terminal
 awful.util.tagnames = { "1", "2", "3", "4", "5" }
@@ -79,7 +79,7 @@ awful.layout.layouts = {
     awful.layout.suit.fair.horizontal,
     --awful.layout.suit.spiral,
     --awful.layout.suit.spiral.dwindle,
-    --awful.layout.suit.max,
+    awful.layout.suit.max,
     --awful.layout.suit.max.fullscreen,
     --awful.layout.suit.magnifier,
     --awful.layout.suit.corner.nw,
@@ -165,24 +165,21 @@ myawesomemenu = {
     { "manual", terminal .. " -e man awesome" },
     { "edit config", string.format("%s -e %s %s", terminal, editor, awesome.conffile) },
     { "restart", awesome.restart },
-    { "quit", function() awesome.quit() end }
 }
 mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesome_icon },
-                                    { "firefox", "firefox" },
-                                    { "terminal", terminal },
-				    { "mc", terminal .. " -e mc "},
-				    { "quit awesome", function() awesome.quit() end },
-				    { "reboot",    "sudo reboot" },
-				    { "poweroff",  "sudo poweroff" }
-				  }
-		       })
+                                    { "open terminal", terminal },
+                                    {"firefox", "firefox"},
+                                    { "quit", function() awesome.quit() end },
+                                    { "reboot",    "sudo reboot" },
+                                    { "poweroff",  "sudo poweroff" }
+                                  }
+                        })
 
 mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
                                      menu = mymainmenu })
 
 menubar.utils.terminal = terminal -- Set the Menubar terminal for applications that require it
 -- }}}
-mykeyboardlayout = awful.widget.keyboardlayout()
 
 -- {{{ Screen
 -- Re-set wallpaper when a screen's geometry changes (e.g. different resolution)
@@ -213,7 +210,7 @@ root.buttons(awful.util.table.join(
 globalkeys = awful.util.table.join(
     -- Take a screenshot
     -- https://github.com/copycat-killer/dots/blob/master/bin/screenshot
-    awful.key({ altkey }, "p", function() os.execute("screenshot") end),
+    awful.key({ altkey }, "p", function() os.execute("scrot --focused -z") end),
 
     -- Hotkeys
     awful.key({ modkey,           }, "s",      hotkeys_popup.show_help,
@@ -262,7 +259,6 @@ globalkeys = awful.util.table.join(
             awful.client.focus.bydirection("left")
             if client.focus then client.focus:raise() end
         end),
-    awful.key({ modkey }, "l", function () awful.spawn(lock_cmd) end),
     awful.key({ modkey,           }, "w", function () awful.util.mymainmenu:show() end,
               {description = "show main menu", group = "awesome"}),
 
@@ -277,7 +273,7 @@ globalkeys = awful.util.table.join(
               {description = "focus the previous screen", group = "screen"}),
     awful.key({ modkey,           }, "u", awful.client.urgent.jumpto,
               {description = "jump to urgent client", group = "client"}),
-    awful.key({ modkey,           }, "Tab",
+--[[    awful.key({ modkey,           }, "Tab",
         function ()
             awful.client.focus.history.previous()
             if client.focus then
@@ -285,7 +281,16 @@ globalkeys = awful.util.table.join(
             end
         end,
         {description = "go back", group = "client"}),
-
+	]] --
+cyclefocus.key({ modkey, }, "Tab", {
+    show_clients = false,
+    move_mouse_pointer = false,
+    display_notifications = false,
+    raise_client = true,
+    focus_clients = true,
+    cycle_filters = { cyclefocus.filters.same_screen, cyclefocus.filters.common_tag },
+    keys = {'Tab', 'ISO_Left_Tab'}  -- default, could be left out
+}),
     -- Show/Hide Wibox
     awful.key({ modkey }, "b", function ()
         for s in screen do
@@ -306,6 +311,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Shift" }, "Left", function () lain.util.move_tag(1) end),   -- move to next tag
     awful.key({ modkey, "Shift" }, "Right", function () lain.util.move_tag(-1) end), -- move to previous tag
     awful.key({ modkey, "Shift" }, "d", function () lain.util.delete_tag() end),
+    awful.key({ modkey,          }, "l", function () awful.spawn(lock_cmd) end),
 
     -- Standard program
     awful.key({ modkey,           }, "Return", function () awful.spawn(terminal) end,
@@ -315,18 +321,12 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Shift"   }, "q", awesome.quit,
               {description = "quit awesome", group = "awesome"}),
 
-    awful.key({ altkey, "Shift"   }, "l",     function () awful.tag.incmwfact( 0.05)          end,
-              {description = "increase master width factor", group = "layout"}),
     awful.key({ altkey, "Shift"   }, "h",     function () awful.tag.incmwfact(-0.05)          end,
               {description = "decrease master width factor", group = "layout"}),
     awful.key({ modkey, "Shift"   }, "h",     function () awful.tag.incnmaster( 1, nil, true) end,
               {description = "increase the number of master clients", group = "layout"}),
-    awful.key({ modkey, "Shift"   }, "l",     function () awful.tag.incnmaster(-1, nil, true) end,
-              {description = "decrease the number of master clients", group = "layout"}),
     awful.key({ modkey, "Control" }, "h",     function () awful.tag.incncol( 1, nil, true)    end,
               {description = "increase the number of columns", group = "layout"}),
-    awful.key({ modkey, "Control" }, "l",     function () awful.tag.incncol(-1, nil, true)    end,
-              {description = "decrease the number of columns", group = "layout"}),
     awful.key({ modkey,           }, "space", function () awful.layout.inc( 1)                end,
               {description = "select next", group = "layout"}),
     awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(-1)                end,
@@ -423,8 +423,10 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey }, "q", function () awful.spawn(browser) end),
 
     -- Default
-    awful.key({ modkey }, "p", function() menubar.show() end),
-
+    --[[ Menubar
+    awful.key({ modkey }, "p", function() menubar.show() end,
+              {description = "show the menubar", group = "launcher"})
+    --]]
     --[[ dmenu
     awful.key({ modkey }, "x", function ()
         awful.spawn(string.format("dmenu_run -i -fn 'Monospace' -nb '%s' -nf '%s' -sb '%s' -sf '%s'",
@@ -612,7 +614,7 @@ client.connect_signal("request::titlebars", function(c)
         { -- Left
             awful.titlebar.widget.iconwidget(c),
             buttons = buttons,
-            layout  = wibox.layout.fixed.horizontal
+            layout  = wibox.layout.fixed.horizontal,
         },
         { -- Middle
             { -- Title
@@ -636,7 +638,7 @@ end)
 
 -- Enable sloppy focus, so that focus follows mouse.
 --client.connect_signal("mouse::enter", function(c)
---    if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
+--  if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
 --        and awful.client.focus.filter(c) then
 --        client.focus = c
 --    end
